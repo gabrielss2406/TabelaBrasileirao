@@ -1,0 +1,47 @@
+body{
+    background-color: rgb(49, 49, 49);
+}
+
+.central{
+    margin: 200px 25%;
+    width: 50%;
+    background-color: rgb(255, 255, 255);
+    padding: 30px 0px;
+}
+
+table {
+    border-collapse: collapse;
+    margin: auto;
+}
+
+th{
+    text-align: center;
+    font-weight: 700;
+    color: #6d6d6d;
+    padding: 5px 10px;
+}
+
+td{
+    text-align: center;
+    padding: 5px 10px;
+}
+
+tr{
+    border: 1px solid #333;
+}
+
+.g4 > td:first-of-type{
+    color: rgb(33, 13, 216);
+}
+
+.pl > td:first-of-type{
+    color: rgb(15, 223, 250);
+}
+
+.sl > td:first-of-type{
+    color: rgb(30, 112, 20);
+}
+
+.re > td:first-of-type{
+    color: rgb(250, 15, 15);
+}
