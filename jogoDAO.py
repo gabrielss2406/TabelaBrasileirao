@@ -43,7 +43,9 @@ class JogoDAO:
 
     def update_jogo(self, jogo: Jogo):
         query = "MATCH (mandante:Time {nome: $time_mandante})-[j:JOGOU]->(visitante:Time {nome: $time_visitante})" \
-                "SET j.gols_$mandante = $gols_mandante, j.gols_$visitante = $gols_visitante, j.vencedor = $vencedor"
+                "SET mandante.saldo = mandante.saldo - j.gols_$mandante + j.gols_$visitante - $gols_visitante + $gols_mandante," \
+                " visitante.saldo = visitante.saldo + j.gols_$mandante - j.gols_$visitante + $gols_visitante - $gols_mandante," \
+                "j.gols_$mandante = $gols_mandante, j.gols_$visitante = $gols_visitante, j.vencedor = $vencedor"
         query = query.replace("$mandante", jogo.mandante)
         query = query.replace("$visitante", jogo.visitante)
         parameters = {"time_mandante": jogo.mandante,
@@ -62,3 +64,20 @@ class JogoDAO:
         query = query.replace("$visitante", time_visitante)
         parameters = {"time_mandante": time_mandante, "time_visitante": time_visitante}
         self.db.execute_query(query, parameters)
+
+    def get_tabela(self):
+        query = """MATCH (n:Time)-[r:JOGOU]-()
+                WITH n.nome AS nome_time,
+                     SUM(CASE WHEN r.vencedor = n.nome THEN 1 ELSE 0 END) AS vitorias,
+                     COUNT(r) AS total_jogos,
+                     n.saldo AS saldo,
+                     SUM(r["gols_" + n.nome]) AS gols_pro
+                RETURN vitorias * 3 + (total_jogos - vitorias) AS pontos,
+                       total_jogos,
+                       vitorias,
+                       saldo,
+                       gols_pro,
+                       nome_time"""
+
+        result = self.db.execute_query(query)
+        return result

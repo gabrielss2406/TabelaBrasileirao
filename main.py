@@ -2,27 +2,28 @@ from database import Database
 from classes import *
 from timeDAO import TimeDAO
 from jogoDAO import JogoDAO
+from generateHtml import generateHtml
 
 db = Database("bolt://54.160.20.84:7687", "neo4j", "case-rig-blankets")
-db.drop_all()
 
 q_time = TimeDAO(db)
 q_jogo = JogoDAO(db)
 
-#CLI
-op = 0
-while op != 9:
+# CLI
+op = -1
+while op != 0:
     op = int(input(f"""-----------Bem Vindo-----------
 
     [1] - Criar time
     [2] - Atualizar time
-    [3] - Deletar tim
+    [3] - Deletar time
     [4] - Stats de um time
     [5] - Adicionar um resultado
     [6] - Atualizar um resultado
     [7] - Deletar um resultado
     [8] - Procurar um resultado
-    [9] - Sair
+    [9] - Gerar tabela HTML
+    [0] - Sair
 
     Sua opção: """))
 
@@ -45,13 +46,15 @@ while op != 9:
         print("\nTime")
         nome = input("Nome: ")
         time = q_time.get_time(nome)
-        print(time)
+        results = TimeEstatisticas.fromResult(time)
+        print(
+            f"Pontos: {results.pontos}\nJogos: {results.total_jogos}\nVitorias: {results.vitorias}\nSaldo de gols: {results.saldo}\nGols marcados: {results.gols_pro}")
     elif op == 5:
         print("\nCriando jogo")
-        time1 = input("Nome: ")
-        time2 = input("Nome: ")
-        gols1 = int(input("Gols time 1: "))
-        gols2 = int(input("Gols time 2: "))
+        time1 = input("Time mandante: ")
+        time2 = input("Time visitante: ")
+        gols1 = int(input("Gols mandante: "))
+        gols2 = int(input("Gols visitante: "))
         if gols1 > gols2:
             vencedor = time1
         elif gols2 > gols1:
@@ -62,10 +65,10 @@ while op != 9:
         q_jogo.create_jogo(jogo)
     elif op == 6:
         print("\nAtualizando jogo")
-        time1 = input("Nome: ")
-        time2 = input("Nome: ")
-        gols1 = int(input("Gols time 1: "))
-        gols2 = int(input("Gols time 2: "))
+        time1 = input("Time mandante: ")
+        time2 = input("Time visitante: ")
+        gols1 = int(input("Gols mandante: "))
+        gols2 = int(input("Gols visitante: "))
         if gols1 > gols2:
             vencedor = time1
         elif gols2 > gols1:
@@ -81,11 +84,20 @@ while op != 9:
         q_jogo.delete_jogo(time1, time2)
     elif op == 8:
         print("\nProcurando jogo")
-        time1 = input("Nome: ")
-        time2 = input("Nome: ")
-        jogo = q_jogo.get_jogo(time1, time2)
-        print(jogo)
-    elif op != 9:
+        time1 = input("Time mandante: ")
+        time2 = input("Time visitante: ")
+        try:
+            jogo = q_jogo.get_jogo(time1, time2)
+            print(f"Gols {time1}: {jogo[f'gols_{time1}']}")
+            print(f"Gols {time2}: {jogo[f'gols_{time2}']}")
+            print(f"Vencedor: {jogo['vencedor']}")
+        except:
+            print("Jogo não encontrado!")
+    elif op == 9:
+        print("\nGerando tabela...")
+        jogo = q_jogo.get_tabela()
+        generateHtml(jogo)
+    elif op != 0:
         print("\nOpção invalida!")
 
 db.close()
