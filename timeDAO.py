@@ -17,11 +17,12 @@ class TimeDAO:
     def get_time(self, nome_time):
         query = "MATCH (n:Time {nome: $nome_time})-[r:JOGOU]-()" \
                 "WITH SUM(CASE WHEN r.vencedor = $nome_time THEN 1 ELSE 0 END) AS vitorias," \
+                "SUM(CASE WHEN r.vencedor = 'Empate' THEN 1 ELSE 0 END) AS empates," \
                 "COUNT(r) AS total_jogos," \
                 "n.saldo AS saldo," \
                 "SUM(r.gols_$time) as gols_pro " \
                 "RETURN " \
-                "vitorias * 3 + (total_jogos - vitorias) AS pontos," \
+                "vitorias * 3 + empates AS pontos," \
                 "total_jogos, vitorias, saldo, gols_pro"
 
         query = query.replace("$time", nome_time)
@@ -41,3 +42,6 @@ class TimeDAO:
                 "DETACH DELETE n"
         parameters = {"time_nome": time_nome}
         self.db.execute_query(query, parameters)
+
+
+

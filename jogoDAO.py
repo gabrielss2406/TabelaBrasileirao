@@ -69,15 +69,17 @@ class JogoDAO:
         query = """MATCH (n:Time)-[r:JOGOU]-()
                 WITH n.nome AS nome_time,
                      SUM(CASE WHEN r.vencedor = n.nome THEN 1 ELSE 0 END) AS vitorias,
+                     SUM(CASE WHEN r.vencedor = 'Empate' THEN 1 ELSE 0 END) AS empates,
                      COUNT(r) AS total_jogos,
                      n.saldo AS saldo,
                      SUM(r["gols_" + n.nome]) AS gols_pro
-                RETURN vitorias * 3 + (total_jogos - vitorias) AS pontos,
+                RETURN vitorias * 3 + empates AS pontos,
                        total_jogos,
                        vitorias,
                        saldo,
                        gols_pro,
-                       nome_time"""
+                       nome_time
+                ORDER BY pontos DESC, vitorias DESC, saldo DESC, gols_pro DESC, nome_time DESC"""
 
         result = self.db.execute_query(query)
         return result
