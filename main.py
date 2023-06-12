@@ -4,7 +4,7 @@ from timeDAO import TimeDAO
 from jogoDAO import JogoDAO
 from generateHtml import generateHtml
 
-db = Database("bolt://54.160.20.84:7687", "neo4j", "case-rig-blankets")
+db = Database("bolt://44.200.162.80:7687", "neo4j", "mediums-sink-bags")
 
 q_time = TimeDAO(db)
 q_jogo = JogoDAO(db)

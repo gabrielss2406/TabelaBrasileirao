@@ -1,9 +1,21 @@
 def generateHtml(tabela):
     trs = ""
+    cont = 1
     for registro in tabela:
+        if(cont<=4):
+            pos = "g4"
+        elif(cont<=6):
+            pos = "pl"
+        elif(cont<=12):
+            pos = "sl"
+        elif(cont<=16):
+            pos = ""
+        else:
+            pos = "re"
+
         trs = f'''{trs}
-        <tr class="g4" id="1">
-            <td>1</td>
+        <tr class="{pos}" id="{cont}">
+            <td>{cont}</td>
             <td>{registro['nome_time']}</td>
             <td>{registro['pontos']}</td>
             <td>{registro['total_jogos']}</td>
@@ -11,6 +23,7 @@ def generateHtml(tabela):
             <td>{registro['saldo']}</td>
             <td>{registro['gols_pro']}</td>
         </tr>'''
+        cont = cont + 1
 
     html = f'''
     <!DOCTYPE html>

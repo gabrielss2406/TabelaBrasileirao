@@ -9,7 +9,7 @@ class JogoDAO:
         query = """
                     MATCH (mandante:Time {nome: $time_mandante})
                     MATCH (visitante:Time {nome: $time_visitante})
-                    CREATE (mandante)-[j:JOGOU {
+                    CREATE (mandante)-[j:JOGOU{
                       gols_$mandante: $gols_mandante,
                       gols_$visitante: $gols_visitante,
                       vencedor: $vencedor
